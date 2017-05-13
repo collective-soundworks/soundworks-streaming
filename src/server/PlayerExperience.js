@@ -5,7 +5,9 @@ export default class PlayerExperience extends Experience {
   constructor(clientType) {
     super(clientType);
 
+    // services
     this.checkin = this.require('checkin');
+    this.sync = this.require('sync');
     this.sharedConfig = this.require('shared-config');
     this.audioBufferManager = this.require('audio-buffer-manager');
   }
