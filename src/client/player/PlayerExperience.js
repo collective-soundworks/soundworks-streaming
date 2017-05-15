@@ -16,6 +16,11 @@ const template = `
   </div>
 `;
 
+/*
+* Soundworks experiment illustrating different methods for straming audio to the 
+* web audio API. see AudioTagStream and AudioNodeStream files for details.
+*/
+
 // test streaming
 class PlayerExperience extends soundworks.Experience {
   constructor(assetsDomain) {
@@ -24,10 +29,6 @@ class PlayerExperience extends soundworks.Experience {
     this.platform = this.require('platform', { features: ['web-audio'] });
     this.checkin = this.require('checkin', { showDialog: false });
     this.sync = this.require('sync');
-    this.audioBufferManager = this.require('audio-buffer-manager', {
-      assetsDomain: assetsDomain,
-      directories: { path: 'sounds', recursive: true },
-    });
 
     // init audio tag stream
     this.tagStream = new AudioTagStream(this, 'audio-tag-0');

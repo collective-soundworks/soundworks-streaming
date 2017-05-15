@@ -2,8 +2,21 @@ import * as soundworks from 'soundworks/client';
 
 const audioContext = soundworks.audioContext;
 
+/*
+* The AudioTagStream class illustrates how to stream audio file to the web audio API based on 
+* the createMediaElementSource method applied to an HMTL audio tag. While perfectly functional 
+* for casual streaming, this approach has several drawbacks (05/2017):
+* - audio tag not designed for precise timing, hard to synchronize audio streams amongst clients
+* - media element source in WebKit will behave as if directly linked to the audioContext.destination, 
+*   regardless of the audio graph one designs (i.e. can't apply gain, analyzer, etc.).
+*/
+
 export default class AudioTagStream {
 
+    /* 
+    * featureId is a string, used to identify the audio-tag feature definition wrt the platform service.
+    * simply make sure that two different audioTagStream instances do not share the same featureId.
+    */
     constructor(experience, featureId) {
         
         // options
@@ -100,7 +113,6 @@ export default class AudioTagStream {
       // get current sync time
       let time = this.e.sync.getSyncTime() % this.audioTag.duration;
       // set audio tag time
-      console.log(time, this.e.sync.getSyncTime(), this.audioTag.duration);
       this.audioTag.currentTime = time;
     }
 

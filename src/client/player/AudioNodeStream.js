@@ -1,6 +1,15 @@
 // TODO:
 // - support streaming of files of total duration shorter than packet duration
 
+/*
+* The AudioNodeStream class illustrates how to stream audio file to the web audio API based on 
+* XMLHttpRequest. At startup, the server segments the audio files marked as streamable into 
+* small chunks. The list of streamable files along with their chunk size and other info are sent 
+* to the client upon connection. From these info, the client initiate XMLHttpRequest to download
+* said chunks and add them to its audio queue. Compared to the AudioTagStream approach, the 
+* AudioNodeStream allows for both stream sync. and behaves as a basic SourceNode in WebKit env.
+*/
+
 ////////////////////////////////////////////////////////
 // UTILS FUNCTIONS 
 ////////////////////////////////////////////////////////
