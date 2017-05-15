@@ -1,6 +1,7 @@
 import * as soundworks from 'soundworks/client';
 
 import AudioTagStream from './AudioTagStream';
+import AudioNodeStream from './AudioNodeStream';
 
 const audioContext = soundworks.audioContext;
 
@@ -28,8 +29,12 @@ class PlayerExperience extends soundworks.Experience {
       directories: { path: 'sounds', recursive: true },
     });
 
+    // init audio tag stream
     this.tagStream = new AudioTagStream(this, 'audio-tag-0');
-    this.tagStream2 = new AudioTagStream(this, 'audio-tag-1');
+    // this.tagStream2 = new AudioTagStream(this, 'audio-tag-1');
+
+    // init audio node stream
+    this.audioNodeStreamBufferInfos = new Map();
   }
 
   start() {
@@ -41,28 +46,43 @@ class PlayerExperience extends soundworks.Experience {
       preservePixelRatio: true,
     });
 
+    // callback: receive stream info
+    this.receive('stream:infos', ( bufferInfos ) => {
+      // shape buffer infos
+      bufferInfos.forEach( (item) => {
+        // get file name (assume at least 1 chunk in item)
+        let fileName = item[0].name.split("/").pop();
+        fileName = fileName.substr(fileName.indexOf("-")+1, fileName.lastIndexOf(".")-2);
+        // save in locals
+        this.audioNodeStreamBufferInfos.set(fileName, item);
+      });
+      this.startAudioNodeStream();
+    });
+
+    this.startAudioTagStream();
+
+    // as show can be async, we make sure that the view is actually rendered
+    this.show().then(() => {});
+  }
+
+  // init and start audio node stream object when received streamable files information
+  startAudioNodeStream(){
+    this.nodeStream = new AudioNodeStream(this, this.audioNodeStreamBufferInfos);
+    this.nodeStream.connect(audioContext.destination);
+    this.nodeStream.url = 'inside-out-bundle-of-joy-cut';
+    this.nodeStream.loop = true;
+    this.nodeStream.sync = false;
+    this.nodeStream.start(0);    
+  }
+
+  startAudioTagStream(){
     // init audio tag streamer
     this.tagStream.init();
     this.tagStream.connect(audioContext.destination);
     this.tagStream.url = 'stream/misconceptions-about-global-warming-cut.wav';
+    this.tagStream.sync = true;
+    this.tagStream.loop = true;    
     this.tagStream.play();
-
-    this.tagStream2.init();
-    this.tagStream2.connect(audioContext.destination);
-    this.tagStream2.url = 'stream/inside-out-bundle-of-joy-cut.wav';
-    this.tagStream2.sync = true;
-    this.tagStream2.loop = true;
-
-    setTimeout( () => {
-      this.tagStream2.play();
-    }, 2000);
-    setTimeout( () => {
-      this.tagStream.stop();
-    }, 4000);
-
-    // as show can be async, we make sure that the view is actually rendered
-    this.show().then(() => {
-    });
   }
 
 }
