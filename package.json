@@ -22,7 +22,7 @@
   "dependencies": {
     "babel-runtime": "^6.6.1",
     "debug": "^2.6.4",
-    "node-audio-slicer": "PyrApple/node-audio-slicer",
+    "node-audio-slicer": "0.0.1",
     "soundworks": "collective-soundworks/soundworks#v2.0.0",
     "source-map-support": "^0.4.0"
   },
