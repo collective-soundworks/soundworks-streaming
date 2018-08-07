@@ -1,4 +1,4 @@
-# Transpiled files and dependencies
+# transpiled files and dependencies
 /node_modules
 /public/js
 /public/css
@@ -8,14 +8,12 @@
 /src/server/config/*
 !/src/server/config/default.js
 
-# Application instance specific
+# application instance specific
 /logs
-/db
+.soundworks
+/bin/.browserify-cache.json
 
 # ignore junk files
 npm-debug.log
 .DS_Store
 Thumbs.db
-
-# ignore stream tmp folders
-/public/stream/*/*

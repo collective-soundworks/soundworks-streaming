@@ -1,13 +1,12 @@
 # CHANGELOG
 
-2.0.0
-- moved services' views from soundworks to template
+## Migating From 1.1.1 to 2.0.0
 
-Migating From 1.1.1 to 2.0.0
-
+- copy `.babelrc` file
 - copy `bin` directory
   + transpiled files are now transpiled into `dist/client` and `dist/server` directories
-  + the existing `client` and `server` can be safely deleted
+  + the existing `client` and `server` directories can be safely deleted
+- copy `sass` directory
 - copy `.babelrc` file
 - update `dependencies` and `devDependencies` in `package.json`
 - copy `src/client/shared` directory
@@ -36,8 +35,61 @@ soundworks.client.init(config.clientType, config);
 + });
 ```
 
+- update `src/server/index.js`
 
-1.1.2
+```
++ import path from 'path';
+- import defaultConfig from './config/default';
++ const configName = process.env.ENV || 'default';
++ const configPath = path.join(__dirname, 'config', configName);
+let config = null;
+
+- switch(process.env.ENV) {
+-   default:
+-     config = defaultConfig;
+-     break;
+- }
+
+// rely on node `require` for synchronicity
++ try {
++   config = require(configPath).default;
++ } catch(err) {
++   console.error(`Invalid ENV "${configName}", file "${configPath}.js" not found`);
++   process.exit(1);
++ }
+
+// configure express environment ('production' enables cache systems)
+process.env.NODE_ENV = config.env;
+// initialize application with configuration options
+soundworks.server.init(config);
+
+// define the configuration object to be passed to the `.ejs` template
+soundworks.server.setClientConfigDefinition((clientType, config, httpRequest) => {
+  return {
+    clientType: clientType,
+    env: config.env,
+    appName: config.appName,
+-    socketIO: config.socketIO,
++    websockets: config.websockets,
+    version: config.version,
+    defaultType: config.defaultClient,
+    assetsDomain: config.assetsDomain,
+  };
+});
+
+```
+
+- `soundworks.Renderer` renamed to `soundworks.Canvas2dRenderer`
+- `soundworks.Experience.createView` removed, views must be created manually 
+- `view.content` renamed to `view.model`
+- `Activity.removeListener` (for sockets messages) renamed to `Activity.stopReceiving`
+- view priority is now an option of the Activity (i.e. `this.options.viewPriority = 7`)
+- initialization order between `Services` and `Experiences` has been introduced server-side, every service must now call `this.ready()` when fully initialized. 
+
+- `Signal` and `SignalAll` moved from `soundworks/client` to `soundworks/utils`
+
+## 1.1.2
+
 - updated sass files (removed `basic-controllers` overrides) (92299b48fc5807db798f8679af1e39c6bcabc8d8 and f0ba6980d48c32b6df52126cf0630c5cfe4ac3c8)
   + copy `sass/*` except `sass/_override.scss`
 

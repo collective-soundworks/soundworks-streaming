@@ -10,15 +10,10 @@ const cwd = process.cwd();
 export default {
   // name of the application, used in the `.ejs` template and by default in
   // the `platform` service to populate its view
-  appName: 'Stream',
+  appName: 'Template',
 
   // name of the environnement ('production' enable cache in express application)
   env: 'development',
-
-  someArray: [0, 1, 2],
-  // version of application, can be used to force reload css and js files
-  // from server (cf. `html/default.ejs`)
-  version: '0.0.1',
 
   // name of the default client type, i.e. the client that can access the
   // application at its root URL
@@ -68,6 +63,9 @@ export default {
     // maxHttpBufferSize: 10E7,
   },
 
+  // password to be used by the `auth` service
+  password: '',
+
   // describe the location where the experience takes places, theses values are
   // used by the `placer`, `checkin` and `locator` services.
   // if one of these service is required, this entry shouldn't be removed.
@@ -88,9 +86,6 @@ export default {
     // labels and/or coordinates)
     capacity: Infinity,
   },
-
-  // password to be used by the `auth` service
-  password: '',
 
   // configuration of the `osc` service
   osc: {
