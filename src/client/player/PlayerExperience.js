@@ -1,26 +1,18 @@
 import * as soundworks from 'soundworks/client';
 import PlayerRenderer from './PlayerRenderer';
+import * as controllers from '@ircam/basic-controllers';
+import * as masters from 'waves-masters';
+
 
 const audioContext = soundworks.audioContext;
 const audio = soundworks.audio;
 
 const template = `
-  <canvas class="background"></canvas>
-  <div class="foreground">
-    <div class="section-top flex-middle">
-      <p>audio-stream-manager</p>
-    </div>
-    <div class="section-center">
-      <input id="seek" type="range" min="-1" max="10" step="0.01" value="0" />
-      <button class="btn" id="start">Start</button>
-      <button class="btn" id="stop">Stop</button>
-    </div>
-    <div class="section-bottom flex-middle"></div>
+  <div>
+    <h2 class="normal">audio-stream-manager</h2>
+    <div id="controllers"></div>
   </div>
 `;
-
-const model = { title: `ok` };
-
 
 class PlayerExperience extends soundworks.Experience {
   constructor(assetsDomain) {
@@ -29,32 +21,62 @@ class PlayerExperience extends soundworks.Experience {
     this.platform = this.require('platform', { features: ['web-audio'] });
 
     this.audioStreamManager = this.require('audio-stream-manager');
-    this.audioScheduler = this.require('audio-scheduler');
-    this.syncScheduler = this.require('sync-scheduler');
   }
 
   start() {
     super.start();
-    console.log(this.id);
-    let stream = null;
 
-    stream = this.audioStreamManager.getStreamEngine('stream-0');
-    stream.connect(audioContext.destination);
-    const playControl = new audio.PlayControl(stream);
+    this.view = new soundworks.View(template, {}, {}, { id: 'player' });
 
-    this.view = new soundworks.CanvasView(template, model, {
-      'click #start': () => playControl.start(),
-      'click #stop': () => playControl.stop(),
-      'input #seek': e => {
-        playControl.seek(parseFloat(e.target.value));
-      },
-    }, {
-      id: this.id,
-      preservePixelRatio: true,
-    });
+    const scheduler = new masters.Scheduler(() => audioContext.currentTime);
+    const transport = new masters.Transport(scheduler);
+    const playControl = new masters.PlayControl(scheduler, transport);
 
     this.show().then(() => {
-      this.view.$el.querySelector('#seek').setAttribute('max', stream.duration);
+      const $container = this.view.$el.querySelector('#controllers');
+
+      const playStop = new controllers.TriggerButtons({
+        label: 'transport',
+        options: ['start', 'pause', 'stop'],
+        default: 'stop',
+        container: $container,
+        callback: value => playControl[value](),
+      });
+
+      const streamIds = this.audioStreamManager.streamIds;
+      let duration = 0;
+
+      streamIds.forEach(id => {
+        const stream = this.audioStreamManager.getStreamEngine(id);
+        stream.connect(audioContext.destination);
+
+        duration = Math.max(duration, stream.duration);
+
+        const toggle = new controllers.Toggle({
+          label: id,
+          default: false,
+          container: $container,
+          callback: value => {
+            if (value) {
+              transport.add(stream);
+            } else {
+              transport.remove(stream);
+            }
+          }
+        });
+      });
+
+      const seek = new controllers.Slider({
+        label: 'seek',
+        min: 0,
+        max: duration,
+        default: 0,
+        step: 0.001,
+        size: 'large',
+        container: $container,
+        callback: value => playControl.seek(value),
+      });
+
     });
   }
 }

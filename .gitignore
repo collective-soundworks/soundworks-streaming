@@ -17,3 +17,7 @@
 npm-debug.log
 .DS_Store
 Thumbs.db
+
+public/sounds/streams/*/*.wav
+public/sounds/streams/*/*.mp3
+!public/sounds/streams/*.wav

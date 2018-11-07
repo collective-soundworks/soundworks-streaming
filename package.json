@@ -1,5 +1,5 @@
 {
-  "name": "soundworks-template",
+  "name": "soundworks-audio-stream-manager-example",
   "authors": [
     "Benjamin Matuszewski",
     "Sébastien Robaszkiewicz",
@@ -23,11 +23,13 @@
     "node": ">=8"
   },
   "dependencies": {
+    "@ircam/basic-controllers": "^1.0.4",
     "babel-runtime": "^6.6.1",
     "debug": "^3.1.0",
     "soundworks": "^2.1.9",
     "source-map-support": "^0.5.6",
-    "waves-audio": "^0.5.0"
+    "waves-audio": "^0.5.0",
+    "waves-masters": "^1.1.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
