@@ -19,6 +19,7 @@ export default class PlayerExperience extends Experience {
         'sine-3': 'sounds/streams/sine-3.wav',
       },
       compress: true,
+      chunkDuration: 6,
     });
   }
 

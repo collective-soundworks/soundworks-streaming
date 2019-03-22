@@ -1,8 +1,8 @@
 import * as soundworks from 'soundworks/client';
-import PlayerRenderer from './PlayerRenderer';
 import * as controllers from '@ircam/basic-controllers';
 import * as masters from 'waves-masters';
 
+controllers.setTheme('dark');
 
 const audioContext = soundworks.audioContext;
 const audio = soundworks.audio;
@@ -76,7 +76,6 @@ class PlayerExperience extends soundworks.Experience {
         container: $container,
         callback: value => playControl.seek(value),
       });
-
     });
   }
 }
